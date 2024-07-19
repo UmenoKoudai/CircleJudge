@@ -41,6 +41,7 @@ public class Judge : MonoBehaviour
     private bool _isObjMove = false;
     private Transform _moveObj;
     private Vector3 _answer;
+    private GameObject _agoCircle;
 
     private void Start()
     {
@@ -80,8 +81,6 @@ public class Judge : MonoBehaviour
 
     public void Calculation()
     {
-
-
         var lineAB = PointB - PointA;
         var lineBC = PointC - PointB;
         var lineCA = PointA - PointC;
@@ -90,30 +89,45 @@ public class Judge : MonoBehaviour
         var dotBCCA = Vector3.Dot(lineBC, lineCA);
         var dotCAAB = Vector3.Dot(lineCA, lineAB);
 
-        if (dotABBC < 0 || dotBCCA < 0 || dotCAAB < 0)
-        {
-            var a = lineBC.x / 2;
-            var b = lineBC.y / 2;
-            if (dotABBC > 0) _answer = new Vector2(lineCA.x / 2, lineCA.y / 2);
-            if (dotBCCA > 0) _answer = new Vector2(lineAB.x / 2, lineAB.y / 2);
-            if (dotCAAB > 0) _answer = new Vector2(lineBC.x / 2, lineBC.y / 2);
-        }
-        else
-        {
-            var lengthAB = Mathf.Pow(lineAB.x, 2) + Mathf.Pow(lineAB.y, 2) + Mathf.Pow(lineAB.z, 2);
-            var lengthBC = Mathf.Pow(lineBC.x, 2) - Mathf.Pow(lineBC.y, 2) - Mathf.Pow(lineBC.z, 2);
+        var lengthAB = Mathf.Pow(lineAB.x, 2) + Mathf.Pow(lineAB.y, 2) + Mathf.Pow(lineAB.z, 2);
+        var lengthBC = Mathf.Pow(lineBC.x, 2) - Mathf.Pow(lineBC.y, 2) - Mathf.Pow(lineBC.z, 2);
 
-            var dot = Mathf.Pow(Vector3.Dot(lineAB, lineBC), 2);
-            var Calculation1 = (1 / (lengthAB * lengthBC) - dot);
-            var Calculation2 = (((lengthAB * lengthBC) - (lengthBC * dot)) * lineAB) + (((lengthAB * lengthBC) - (lengthAB * dot)) * lineBC);
-            var Calculation3 = (Calculation2 * Calculation1) * 0.5f;
+        var dot = Vector3.Dot(lineAB, lineBC);
+        var Calculation1 = (1 / (lengthAB * lengthBC) - Mathf.Pow(dot, 2));
+        var Calculation2 = (((lengthAB * lengthBC) - (lengthBC * dot)) * lineAB) + (((lengthAB * lengthBC) - (lengthAB * dot)) * lineBC);
+        var Calculation3 = (Calculation2 * Calculation1) * 0.5f;
 
-            _answer = PointB + Calculation3;
-        }
+        _answer = PointB + Calculation3;
+
+        //if (dotABBC < 0 || dotBCCA < 0 || dotCAAB < 0)
+        //{
+        //    Debug.Log("“ÝŠp‚¾‚Á‚½");
+        //    if (dotABBC > 0) _answer = (PointA + PointC) / 2;
+        //    if (dotBCCA > 0) _answer = (PointA + PointB) / 2;
+        //    if (dotCAAB > 0) _answer = (PointB + PointC) / 2;
+        //}
+        //else
+        //{
+        //    Debug.Log("‰sŠp‚¾‚Á‚½");
+        //    var lengthAB = Mathf.Pow(lineAB.x, 2) + Mathf.Pow(lineAB.y, 2) + Mathf.Pow(lineAB.z, 2);
+        //    var lengthBC = Mathf.Pow(lineBC.x, 2) - Mathf.Pow(lineBC.y, 2) - Mathf.Pow(lineBC.z, 2);
+
+        //    var dot = Vector3.Dot(lineAB, lineBC);
+        //    var Calculation1 = (1 / (lengthAB * lengthBC) - Mathf.Pow(dot, 2));
+        //    var Calculation2 = (((lengthAB * lengthBC) - (lengthBC * dot)) * lineAB) + (((lengthAB * lengthBC) - (lengthAB * dot)) * lineBC);
+        //    var Calculation3 = (Calculation2 * Calculation1) * 0.5f;
+
+        //    _answer = PointB + Calculation3;
+        //}
         _answerTextX.text = _answer.x.ToString();
         _answerTextY.text = _answer.y.ToString();
         _answerTextZ.text = _answer.z.ToString();
-        Instantiate(_centerPrefab, _answer, Quaternion.identity);
+        var obj = Instantiate(_centerPrefab, _answer, Quaternion.identity);
+        if (_agoCircle)
+        {
+            Destroy(_agoCircle);
+        }
+        _agoCircle = obj;
     }
 
     public void ResetPosition()
